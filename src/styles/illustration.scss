@@ -1,0 +1,58 @@
+[zoom-entry-point]{
+    .scroll-animation-container{
+        &.illustration{
+            .scroll-content{
+                .text-content{
+                    color:#a8a8a8;
+                    position: relative;
+                    max-width:600px;
+                    z-index:8999;
+                    font-style:italic;
+                    // margin-top: 80vh;
+                    padding:0 0 3.5em 0;
+                    // color:#d0d0d0;
+                    font-size: 1em;
+                    line-height: 1.5em;
+                }
+                .illu-content{
+                    overflow: hidden;
+                    width:100%;
+                    max-width:500px;
+                    height: auto;
+                    // margin-top: 80vh;
+                    text-align: center;
+                    // padding:0 0 50px 0;
+                    margin: auto;
+                    @media only screen and (min-width: 768px){
+                        max-width: 600px;
+                        // font-size: 2.5em;
+                    }
+                    #badEye{
+                        opacity:1;
+                    }
+                    #goodEye{
+                        opacity:0.1;
+                        // clip-path: url(#theMask);
+                        // -moz-clip-path: url(#theMaskF);
+                    }
+                    #theMask{
+                        opacity: 1;
+                        transform-origin: 2.5px 2.5px;
+                    }
+                    .needle{
+                        fill:#d0d0d0;
+                    }
+                    .needle-border{
+                        fill:black;
+                    }
+                    .st0{fill:#1E1E1E;}
+                    .st1{fill:#707070;}
+                    .st2{fill:#5E372E;}
+                    .st3{fill:#FFFFFF;}
+                    .st4{fill:#89574C;}
+                    .st5{fill:url(#SVGID_1_);}
+                }
+            }
+        }
+    }
+}

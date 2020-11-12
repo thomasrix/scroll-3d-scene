@@ -1,0 +1,42 @@
+<style>
+	body{
+		background-color: #000;
+	}
+	@keyframes light{ 
+		0%{color:#222} 
+		33%{color:#222} 
+		66%{color:#fff} 
+		100%{color:#fff}
+	} 
+	#loader-points{
+		font-size:50px;
+		background:#000;
+		position:absolute;
+		color:#222;
+		text-align:center;
+		padding-top:45vh;
+		box-sizing:border-box;
+		width:100vw; height:100vh;
+		top:0; left:0;
+		} 
+	#loader-points .l1{
+		padding:0 5px 0 5px;
+		animation:light 1000ms ease-in-out 0s infinite alternate;
+		} 
+	#loader-points .l2{
+		padding:0 5px 0 5px;
+		animation:light 1000ms ease-in-out 333ms infinite alternate;
+		}
+	#loader-points .l3{
+		padding:0 5px 0 5px;
+		animation:light 1000ms ease-in-out 666ms infinite alternate;
+		}
+</style>
+<div id="loader-points"><span class="l1">•</span><span class="l2">•</span><span class="l3">•</span></div>
+<div zoom-entry-point></div>
+<link rel='stylesheet' href='./index.css'>
+<script>
+	var scr = document.createElement('script');
+	scr.src = './index.js';
+	document.getElementsByTagName('head')[0].appendChild(scr);
+</script>

@@ -1,0 +1,44 @@
+[zoom-entry-point]{
+    .scroll-animation-container{
+        &.basic-text{
+
+            .scroll-content{
+                position: relative;
+                // width:100vw;
+                // margin-top:-10vh;
+                // position: absolute;
+                .text-content{
+                    position: relative;
+                    max-width:600px;
+                    z-index:8999;
+                    // margin-top: 80vh;
+                    padding:0 0 1.5em 0;
+                    // color:#d0d0d0;
+                    font-size: 1.15em;
+                    line-height: 1.5em;
+                    a{
+                        color:#d0d0d0;
+                        text-decoration:underline !important;
+                    }
+                    .larger{
+                        font-weight:400;
+                        font-size:1.5em;
+                    }
+                    .double-column{
+                        display:flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        &.space-above{
+                            margin-top: 25vh;
+                        }
+                        
+                        @media only screen and (orientation: landscape){
+                            flex-direction: row;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
