@@ -1,13 +1,23 @@
-@import './blind-girls.scss';
+// @import './scroll-animation.scss';
 [zoom-entry-point]{
+    background-color: rgb(236, 236, 236);
+
     font-family: Publik, Arial, sans-serif;
     font-size: 16px;
     .scroll-animation-container{
         // position: relative;
         // min-height:100vh;
         width:100%;
+        .fixed-content{
+            position: relative;
+            top:0;
+            left:0;
+            width:100vw;
+            height: 100vh;
+        }
         .scroll-content{
-
+            width:100%;
+            top:0;
             .text-content{
                 font-weight: 400;
                 width:90%;
