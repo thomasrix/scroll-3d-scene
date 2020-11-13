@@ -1,0 +1,19 @@
+[zoom-entry-point]{
+    .scroll-animation-container{
+        &.scene-3d{
+
+            .scroll-content{
+                position: relative;
+                .scene-content{
+                    width:100%;
+                    height:auto;
+                    // background-color: rgb(202, 202, 202);
+                    margin: 5vh 0;
+                    .canvas-element{
+                        width:100%;
+                    }
+                }
+            }
+        }
+    }
+}

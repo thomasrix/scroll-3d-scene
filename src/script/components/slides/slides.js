@@ -2,6 +2,7 @@
 import {select, create, fetchJSON} from '../../utils/trix';
 import BasicText from './basic-text';
 import Intro from './intro';
+import Scene3D from './scene-3d';
 
 export default class Slides{
     constructor(){
@@ -10,6 +11,7 @@ export default class Slides{
         this.types = {
             'intro':Intro,
             'basic-text':BasicText,
+            'scene-3d':Scene3D,
         }
     }
     init(){
