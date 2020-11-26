@@ -2,6 +2,7 @@
 import {select, create, fetchJSON} from '../../utils/trix';
 import BasicText from './basic-text';
 import Intro from './intro';
+import ModelText3D from './model-text-3d';
 import Scene3D from './scene-3d';
 
 export default class Slides{
@@ -12,6 +13,7 @@ export default class Slides{
             'intro':Intro,
             'basic-text':BasicText,
             'scene-3d':Scene3D,
+            'model-text-3d':ModelText3D,
         }
     }
     init(){

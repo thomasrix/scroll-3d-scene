@@ -1,10 +1,11 @@
 'use strict'
 import {create, replaceLineBreaks} from '../../utils/trix';
-import '../../../styles/scene-3d.scss';
+import '../../../styles/model-text-3d.scss';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {gsap} from 'gsap';
 
-export default class Scene3D{
+export default class ModelText3D{
     constructor(el, container){
         // console.log('basic txt construct');
         this.element = el;
@@ -13,7 +14,7 @@ export default class Scene3D{
     }
     build(){
         this.wrapper = create('div', this.container, 'scroll-animation-container');
-        this.wrapper.classList.add('scene-3d');
+        this.wrapper.classList.add('model-text-3d');
         // this.fixedContent = create('div', this.wrapper, 'fixed-content');
         this.scrollContent = create('div', this.wrapper, 'scroll-content');
 
@@ -22,8 +23,8 @@ export default class Scene3D{
         this.canvas = create('canvas', this.sceneContent, 'canvas-element');
         this.ctx = this.canvas.getContext('webgl');
 
-        this.canvas.width = 1000;
-        this.canvas.height = 500;
+        this.canvas.width = 2000;
+        this.canvas.height = 1000;
 
         this.build3D();
         this.setupTimeline();
@@ -32,6 +33,7 @@ export default class Scene3D{
         // this.textContent.innerHTML = this.formatText(this.element.text);
     }
     setupTimeline(){
+        const to = {}
         this.timeline = gsap.timeline({
             paused:true,
             scrollTrigger:{
@@ -45,7 +47,7 @@ export default class Scene3D{
             onUpdate:()=>{
                 // console.log('middle update', this.tl.time(), this.tl.progress());
                 // this.zoom.render(this.tl);
-                this.camera.lookAt(0, 2.3, 0);
+                this.camera.lookAt(1, 1.3, 0);
                 // this.renderer.render(this.scene, this.camera);
             }
             
@@ -55,7 +57,7 @@ export default class Scene3D{
     }
     build3D(){
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('hsl(180, 1%, 85%)');
+        this.scene.background = new THREE.Color('hsl(180, 1%, 2%)');
         // console.log('scene', scene);
         // const context = this.ctx;
         this.renderer = new THREE.WebGLRenderer({
@@ -65,71 +67,42 @@ export default class Scene3D{
         // WebGL background color
         // this.renderer.setClearColor('hsl(0, 0%, 60%)', 0);
         this.renderer.setSize(this.canvas.width, this.canvas.height);
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.shadowMap.enabled = true;
+        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // this.renderer.shadowMap.enabled = true;
         
         // Setup a camera
         // const camera = new THREE.OrthographicCamera();
         this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 100);
-        this.camera.position.z = 8;
-        this.camera.position.y = 2.8;
+        this.camera.position.z = 7;
+        this.camera.position.x = -3;
+        this.camera.position.y = 4;
         
         this.scene.add(this.camera);
 
-        this.scene.add(new THREE.AmbientLight('hsl(180, 20%, 90%)'));
+        this.scene.add(new THREE.AmbientLight('hsl(180, 5%, 40%)'));
         let d_light = new THREE.PointLight( 0xffffff, 1, 0, 2);
         
-        d_light.castShadow = true;
+        // d_light.castShadow = true;
         d_light.position.set( -10, 15, 12 );
         d_light.shadow.mapSize.height = 1024; // default   
         d_light.shadow.mapSize.width = 1024; // default
         
         this.scene.add(d_light);
 
-        this.sphere = new THREE.SphereGeometry( 0.5, 32, 32 );
-        this.box = new THREE.BoxGeometry();
-        
-        this.group = new THREE.Group();
-        
-        const items = [
-            {x:0, y:0.5, z:0, r:1},
-            {x:2, y:0.5, z:0.5, r:2},
-            {x:-1.6, y:0.5, z:0.3, r:2},
-            {x:-2.2, y:0.5, z:-1.5, r:2.5},
-            {x:1.2, y:0.5, z:-2.5, r:2.9},
-            {x:-.2, y:0.5, z:-3, r:0.6},
-        ]
-        const material = new THREE.MeshStandardMaterial({
-            color: `hsl(180, 10%, 70%)`,
-            metalness:0.5,
-            roughness:0.1,
-            wireframe:false
-        });
-        const p_material = new THREE.MeshStandardMaterial({
-            color: `hsl(180, 1%, 90%)`,
-            metalness:0.5,
-            roughness:0.1,
-            wireframe:false
-        });
-        items.forEach((item, index)=>{
-            const mesh = new THREE.Mesh(this.box, material);
-            mesh.position.set(item.x, item.y, item.z);
-            mesh.rotateY(item.r);
-            mesh.castShadow = true;
-            this.group.add(mesh);
-        })
-        this.scene.add(this.group);
+        const loader = new GLTFLoader();
 
-        const planeG = new THREE.PlaneGeometry(20, 20, 4, 4);
+        const localScene = this.scene;
 
-        const plane = new THREE.Mesh(planeG, p_material);
-        plane.receiveShadow = true;
+        loader.load( process.env.EXTERNAL_ASSETS_PATH + 'df-2.glb', function ( gltf ) {
 
-        plane.rotation.x = -Math.PI/2;
-        plane.position.z = -3
-        plane.position.y = -0.01
+	    localScene.add( gltf.scene );
 
-        this.scene.add(plane)
+        }, undefined, function ( error ) {
+
+        console.error( error );
+
+        } );
+
         // console.log('render', this.camera)
         
         this.renderer.render(this.scene, this.camera);
