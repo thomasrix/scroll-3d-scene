@@ -26,6 +26,10 @@ export default class ModelText3D{
         this.canvas.width = 2000;
         this.canvas.height = 1000;
 
+        this.to = {
+             y:4,
+             a:1
+         }
         this.build3D();
         this.setupTimeline();
 
@@ -33,7 +37,6 @@ export default class ModelText3D{
         // this.textContent.innerHTML = this.formatText(this.element.text);
     }
     setupTimeline(){
-        const to = {}
         this.timeline = gsap.timeline({
             paused:true,
             scrollTrigger:{
@@ -47,13 +50,14 @@ export default class ModelText3D{
             onUpdate:()=>{
                 // console.log('middle update', this.tl.time(), this.tl.progress());
                 // this.zoom.render(this.tl);
-                this.camera.lookAt(1, 1.3, 0);
+                this.camera.position.y = this.to.y;
+                this.camera.lookAt(1, this.to.a, 0);
                 // this.renderer.render(this.scene, this.camera);
             }
             
 
         });
-        this.timeline.to(this.camera.position, {y:.5, ease:'none'})
+        this.timeline.to(this.to, {y:.5, a:1.5, ease:'none'})
     }
     build3D(){
         this.scene = new THREE.Scene();
@@ -63,29 +67,34 @@ export default class ModelText3D{
         this.renderer = new THREE.WebGLRenderer({
             context:this.ctx
         });
+        // const axesHelper = new THREE.AxesHelper( 5 );
+        // this.scene.add( axesHelper );
         // console.log(this.renderer.getContext())
         // WebGL background color
         // this.renderer.setClearColor('hsl(0, 0%, 60%)', 0);
         this.renderer.setSize(this.canvas.width, this.canvas.height);
+        // this.renderer.antialias = true;
+        // this.renderer.physicallyCorrectLights = true;
         // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         // this.renderer.shadowMap.enabled = true;
         
         // Setup a camera
         // const camera = new THREE.OrthographicCamera();
         this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 100);
-        this.camera.position.z = 7;
-        this.camera.position.x = -3;
-        this.camera.position.y = 4;
+        this.camera.position.z = 9;
+        this.camera.position.x = -1;
+        this.camera.position.y = this.to.y;
         
         this.scene.add(this.camera);
 
         this.scene.add(new THREE.AmbientLight('hsl(180, 5%, 40%)'));
-        let d_light = new THREE.PointLight( 0xffffff, 1, 0, 2);
+        // let d_light = new THREE.PointLight( 0xffffff, 1, 0, 2);
+        let d_light = new THREE.DirectionalLight( 0xffffff, 0.7);
         
         // d_light.castShadow = true;
-        d_light.position.set( -10, 15, 12 );
-        d_light.shadow.mapSize.height = 1024; // default   
-        d_light.shadow.mapSize.width = 1024; // default
+        d_light.position.set( 0, 15, 12 );
+        // d_light.shadow.mapSize.height = 1024; // default   
+        // d_light.shadow.mapSize.width = 1024; // default
         
         this.scene.add(d_light);
 
