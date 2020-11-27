@@ -1,5 +1,5 @@
 'use strict'
-import {create, replaceLineBreaks} from '../../utils/trix';
+import {create, replaceLineBreaks, lerp, normalize} from '../../utils/trix';
 import '../../../styles/model-text-3d.scss';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -20,21 +20,38 @@ export default class ModelText3D{
 
         this.sceneContent = create('div', this.scrollContent, 'scene-content');
 
+        
         this.canvas = create('canvas', this.sceneContent, 'canvas-element');
         this.ctx = this.canvas.getContext('webgl');
-
+        
         this.canvas.width = 2000;
         this.canvas.height = 1000;
-
+        
         this.to = {
-             y:4,
-             a:1
-         }
+            y:4,
+            a:1,
+            z:9
+        }
         this.build3D();
         this.setupTimeline();
-
+        this.sceneContent.addEventListener('mousemove', (e)=>{
+            this.moveCameraSideways(e);
+        })
+        this.sceneContent.addEventListener('touchmove', (e)=>{
+            this.moveCameraSideways(e);
+        })
+        
         // this.textContent = create('div', this.scrollContent, 'text-content');
         // this.textContent.innerHTML = this.formatText(this.element.text);
+    }
+    moveCameraSideways(e){
+        // console.log('move', e.clientX);
+        const normPos = e.clientX / this.sceneContent.getBoundingClientRect().width;
+        const x = lerp(normalize(e.clientX, 0, this.sceneContent.getBoundingClientRect().width), 3, -3);
+        console.log(x);
+        this.camera.position.x = x;
+        this.camera.lookAt(1, this.to.a, 0);
+
     }
     setupTimeline(){
         this.timeline = gsap.timeline({
@@ -51,13 +68,14 @@ export default class ModelText3D{
                 // console.log('middle update', this.tl.time(), this.tl.progress());
                 // this.zoom.render(this.tl);
                 this.camera.position.y = this.to.y;
+                this.camera.position.z = this.to.z;
                 this.camera.lookAt(1, this.to.a, 0);
                 // this.renderer.render(this.scene, this.camera);
             }
             
 
         });
-        this.timeline.to(this.to, {y:.5, a:1.5, ease:'none'})
+        this.timeline.to(this.to, {y:.5, a:1.5, z:10, ease:'none'});
     }
     build3D(){
         this.scene = new THREE.Scene();
@@ -82,7 +100,7 @@ export default class ModelText3D{
         // const camera = new THREE.OrthographicCamera();
         this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 100);
         this.camera.position.z = 9;
-        this.camera.position.x = -1;
+        this.camera.position.x = -1.5;
         this.camera.position.y = this.to.y;
         
         this.scene.add(this.camera);

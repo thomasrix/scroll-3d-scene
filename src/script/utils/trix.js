@@ -29,6 +29,17 @@ export function replaceLineBreaks(t){
     t = t.replace(/<\/h>/g, '</div>');
     return t.replace(/(?:\r\n|\r|\n)/g, ' <br/> ');
 };
+export function lerp(norm, min, max) {
+    return (max - min) * norm + min;
+}
+export function normalize(value, min, max) {
+    return (value - min) / (max - min);
+}
+export function clamp(value, min, max) {
+    if (value > max) value = max;
+    if (value < min) value = min;
+    return value;
+}
 export function throttleEvents(listener, delay) {
     var timeout;
     var throttledListener = function(e) {
