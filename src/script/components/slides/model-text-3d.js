@@ -3,6 +3,7 @@ import {create, replaceLineBreaks, lerp, normalize} from '../../utils/trix';
 import '../../../styles/model-text-3d.scss';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {gsap} from 'gsap';
 
 export default class ModelText3D{
@@ -34,15 +35,36 @@ export default class ModelText3D{
         }
         this.build3D();
         this.setupTimeline();
-        this.sceneContent.addEventListener('mousemove', (e)=>{
-            this.moveCameraSideways(e);
-        })
-        this.sceneContent.addEventListener('touchmove', (e)=>{
-            this.moveCameraSideways(e);
-        })
         
+        this.sceneContent.addEventListener('mousedown', this.startRotating.bind(this));
+        this.sceneContent.addEventListener('mouseup', this.stopRotating.bind(this));
+        // this.sceneContent.addEventListener('mouseenter', this.startRotating.bind(this));
+        this.sceneContent.addEventListener('mouseleave', this.stopRotating.bind(this));
+
+        this.sceneContent.addEventListener('touchstart', this.startRotating.bind(this));
+        this.sceneContent.addEventListener('touchend', this.stopRotating.bind(this));
+
+        this.boundRotate = this.rotateScene.bind(this);
         // this.textContent = create('div', this.scrollContent, 'text-content');
         // this.textContent.innerHTML = this.formatText(this.element.text);
+    }
+    startRotating(e){
+        console.log('start');
+        this.deltaX = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
+        this.sceneContent.addEventListener('mousemove', this.boundRotate);
+        this.sceneContent.addEventListener('touchmove', this.boundRotate);
+    }
+    stopRotating(){
+        this.sceneContent.removeEventListener('mousemove', this.boundRotate);
+        this.sceneContent.removeEventListener('touchmove', this.boundRotate);
+    }
+    rotateScene(e){
+        const ex = (e.type == 'touchmove') ? e.touches[0].clientX : e.clientX;
+        console.log(ex);
+        const r = (ex - this.deltaX) / this.sceneContent.getBoundingClientRect().width;
+        console.log(r);
+        this.deltaX = ex;
+        this.rotationObject.rotation.y += r;
     }
     moveCameraSideways(e){
         // console.log('move', e.clientX);
@@ -53,6 +75,7 @@ export default class ModelText3D{
         this.camera.lookAt(1, this.to.a, 0);
 
     }
+
     setupTimeline(){
         this.timeline = gsap.timeline({
             paused:true,
@@ -75,7 +98,7 @@ export default class ModelText3D{
             
 
         });
-        this.timeline.to(this.to, {y:.5, a:1.5, z:10, ease:'none'});
+        this.timeline.to(this.to, {y:1.5, a:2.5, z:10, ease:'none'});
     }
     build3D(){
         this.scene = new THREE.Scene();
@@ -98,27 +121,39 @@ export default class ModelText3D{
         
         // Setup a camera
         // const camera = new THREE.OrthographicCamera();
-        this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 100);
+        this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 1000);
         this.camera.position.z = 9;
         this.camera.position.x = -1.5;
         this.camera.position.y = this.to.y;
         
         this.scene.add(this.camera);
 
-        this.scene.add(new THREE.AmbientLight('hsl(180, 5%, 40%)'));
+/*         const controls = new OrbitControls( this.camera, this.canvas );
+        controls.enableZoom = false;
+        controls.enableDamping = true;
+        controls.enablePan = false; */
+
+        this.rotationObject = new THREE.Group();
+        this.scene.add(this.rotationObject);
+
+        this.rotationObject.add(new THREE.AmbientLight('hsl(180, 5%, 40%)'));
+
         // let d_light = new THREE.PointLight( 0xffffff, 1, 0, 2);
-        let d_light = new THREE.DirectionalLight( 0xffffff, 0.7);
+        let d_light = new THREE.DirectionalLight( 0xeeeeee, 0.5);
+        let d_light_2 = new THREE.DirectionalLight( 0xffffff, 0.7);
         
         // d_light.castShadow = true;
         d_light.position.set( 0, 15, 12 );
+        d_light_2.position.set( 0, 15, -12 );
         // d_light.shadow.mapSize.height = 1024; // default   
         // d_light.shadow.mapSize.width = 1024; // default
         
-        this.scene.add(d_light);
+        this.rotationObject.add(d_light);
+        this.rotationObject.add(d_light_2);
 
         const loader = new GLTFLoader();
 
-        const localScene = this.scene;
+        const localScene = this.rotationObject;
 
         loader.load( process.env.EXTERNAL_ASSETS_PATH + 'df-2.glb', function ( gltf ) {
 
