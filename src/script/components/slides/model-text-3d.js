@@ -29,9 +29,9 @@ export default class ModelText3D{
         this.canvas.height = 1000;
         
         this.to = {
-            y:4,
+            y:5,
             a:1,
-            z:9
+            z:12
         }
         this.build3D();
         this.setupTimeline();
@@ -60,9 +60,9 @@ export default class ModelText3D{
     }
     rotateScene(e){
         const ex = (e.type == 'touchmove') ? e.touches[0].clientX : e.clientX;
-        console.log(ex);
+        // console.log(ex);
         const r = (ex - this.deltaX) / this.sceneContent.getBoundingClientRect().width;
-        console.log(r);
+        // console.log(r);
         this.deltaX = ex;
         this.rotationObject.rotation.y += r;
     }
@@ -98,11 +98,11 @@ export default class ModelText3D{
             
 
         });
-        this.timeline.to(this.to, {y:1.5, a:2.5, z:10, ease:'none'});
+        this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
     }
     build3D(){
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('hsl(180, 1%, 2%)');
+        this.scene.background = new THREE.Color('hsl(180, 1%, 3%)');
         // console.log('scene', scene);
         // const context = this.ctx;
         this.renderer = new THREE.WebGLRenderer({
@@ -122,8 +122,8 @@ export default class ModelText3D{
         // Setup a camera
         // const camera = new THREE.OrthographicCamera();
         this.camera = new THREE.PerspectiveCamera(40, this.canvas.width / this.canvas.height, 0.1, 1000);
-        this.camera.position.z = 9;
-        this.camera.position.x = -1.5;
+        this.camera.position.z = this.to.z;
+        this.camera.position.x = 0;
         this.camera.position.y = this.to.y;
         
         this.scene.add(this.camera);
@@ -136,35 +136,40 @@ export default class ModelText3D{
         this.rotationObject = new THREE.Group();
         this.scene.add(this.rotationObject);
 
-        this.rotationObject.add(new THREE.AmbientLight('hsl(180, 5%, 40%)'));
+        this.rotationObject.add(new THREE.AmbientLight('#DDDDDD'));
 
         // let d_light = new THREE.PointLight( 0xffffff, 1, 0, 2);
         let d_light = new THREE.DirectionalLight( 0xeeeeee, 0.5);
-        let d_light_2 = new THREE.DirectionalLight( 0xffffff, 0.7);
+        let d_light_2 = new THREE.DirectionalLight( 0xffffff, 0.5);
+        
+        let d_light_3 = new THREE.DirectionalLight( 0xdddddd, 0.4);
         
         // d_light.castShadow = true;
-        d_light.position.set( 0, 15, 12 );
-        d_light_2.position.set( 0, 15, -12 );
+        d_light.position.set( 3, 3 , 0);
+        d_light_2.position.set( 3, 3, 2 );
+        d_light_3.position.set( -4, 4, 2 );
         // d_light.shadow.mapSize.height = 1024; // default   
         // d_light.shadow.mapSize.width = 1024; // default
         
         this.rotationObject.add(d_light);
         this.rotationObject.add(d_light_2);
+        this.rotationObject.add(d_light_3);
 
         const loader = new GLTFLoader();
 
         const localScene = this.rotationObject;
 
-        loader.load( process.env.EXTERNAL_ASSETS_PATH + 'df-2.glb', function ( gltf ) {
+        loader.load( process.env.EXTERNAL_ASSETS_PATH + 'baking-test-04.glb', function ( gltf ) {
 
-	    localScene.add( gltf.scene );
+            localScene.add( gltf.scene );
+            // gltf.scene.scale = 0.9;
 
         }, undefined, function ( error ) {
 
         console.error( error );
 
         } );
-
+        this.rotationObject.rotation.y -= 0.7
         // console.log('render', this.camera)
         
         this.renderer.render(this.scene, this.camera);
