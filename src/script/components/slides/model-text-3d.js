@@ -24,9 +24,15 @@ export default class ModelText3D{
         
         this.canvas = create('canvas', this.sceneContent, 'canvas-element');
         this.ctx = this.canvas.getContext('webgl');
-        
-        this.canvas.width = 2000;
-        this.canvas.height = 1000;
+
+        this.query = window.matchMedia('(max-width: 767px)');
+        // console.log('listener', this.query.addEventListener);
+        if(this.query.addEventListener === undefined || this.query.addEventListener === null){
+            this.query.addListener(this.querySwitch.bind(this));
+        }else{
+            this.query.addEventListener('change', this.querySwitch.bind(this));
+        }
+        this.querySwitch(this.query);
         
         this.to = {
             y:5,
@@ -47,6 +53,18 @@ export default class ModelText3D{
         this.boundRotate = this.rotateScene.bind(this);
         // this.textContent = create('div', this.scrollContent, 'text-content');
         // this.textContent.innerHTML = this.formatText(this.element.text);
+    }
+    querySwitch(q){
+        console.log('switch', q.matches);
+        if(q.matches){
+            this.canvas.width = 2000;
+            this.canvas.height = 2000;
+        }else{
+            this.canvas.width = 2000;
+            this.canvas.height = 1000;
+        }
+
+
     }
     startRotating(e){
         console.log('start');
@@ -73,6 +91,7 @@ export default class ModelText3D{
         console.log(x);
         this.camera.position.x = x;
         this.camera.lookAt(1, this.to.a, 0);
+        // this.renderer.render(this.scene, this.camera);
 
     }
 
@@ -82,6 +101,10 @@ export default class ModelText3D{
             scrollTrigger:{
                 scrub:true,
                 trigger:this.scrollContent,
+                onEnter:this.startAnimating.bind(this),
+                onLeave:this.stopAnimating.bind(this),
+                onEnterBack:this.startAnimating.bind(this),
+                onLeaveBack:this.stopAnimating.bind(this),
                 // pin:true,
                 // markers:true,
                 // start:'top top',
@@ -99,6 +122,26 @@ export default class ModelText3D{
 
         });
         this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
+    }
+    render(){
+        // console.log('render', this)
+        // controls.update();
+        this.renderer.render(this.scene, this.camera);
+        this.reqID = requestAnimationFrame(this.render.bind(this));
+    }
+    startAnimating(){
+        console.log('start animating', this);
+        // this.render();
+        const render = ()=>{
+            // console.log('r')
+            this.renderer.render(this.scene, this.camera);
+            this.reqID = requestAnimationFrame(render);
+        }
+        render();
+    }
+    stopAnimating(){
+        console.log('stop animating', this.reqID);
+        cancelAnimationFrame(this.reqID)
     }
     build3D(){
         this.scene = new THREE.Scene();
@@ -174,12 +217,6 @@ export default class ModelText3D{
         
         this.renderer.render(this.scene, this.camera);
 
-        const render = ()=>{
-            // controls.update();
-            this.renderer.render(this.scene, this.camera);
-            requestAnimationFrame(render);
-        }
-        render();
     }
     formatText(t){
         t = replaceLineBreaks(t);
