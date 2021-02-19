@@ -63,16 +63,21 @@ export default class ModelText3D{
             this.canvas.width = 2000;
             this.canvas.height = 1000;
         }
-
+        if(this.renderer!==undefined){
+            this.camera.aspect = this.canvas.width / this.canvas.height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(this.canvas.width, this.canvas.height);
+        }
 
     }
     startRotating(e){
-        console.log('start');
+        console.log('start rotating');
         this.deltaX = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
         this.sceneContent.addEventListener('mousemove', this.boundRotate);
         this.sceneContent.addEventListener('touchmove', this.boundRotate);
     }
     stopRotating(){
+        console.log('stop rotating');
         this.sceneContent.removeEventListener('mousemove', this.boundRotate);
         this.sceneContent.removeEventListener('touchmove', this.boundRotate);
     }
@@ -123,14 +128,8 @@ export default class ModelText3D{
         });
         this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
     }
-    render(){
-        // console.log('render', this)
-        // controls.update();
-        this.renderer.render(this.scene, this.camera);
-        this.reqID = requestAnimationFrame(this.render.bind(this));
-    }
     startAnimating(){
-        console.log('start animating', this);
+        console.log('start animating');
         // this.render();
         const render = ()=>{
             // console.log('r')
