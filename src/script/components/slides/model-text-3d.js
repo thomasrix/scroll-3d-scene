@@ -3,7 +3,6 @@ import {create, replaceLineBreaks, lerp, normalize} from '../../utils/trix';
 import '../../../styles/model-text-3d.scss';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {gsap} from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 
@@ -47,12 +46,13 @@ export default class ModelText3D{
         this.sceneContent.addEventListener('mousedown', this.startRotating.bind(this));
         this.sceneContent.addEventListener('mouseup', this.stopRotating.bind(this));
         // this.sceneContent.addEventListener('mouseenter', this.startRotating.bind(this));
-        this.sceneContent.addEventListener('mouseleave', this.stopRotating.bind(this));
+        
 
         this.sceneContent.addEventListener('touchstart', this.startRotating.bind(this));
         this.sceneContent.addEventListener('touchend', this.stopRotating.bind(this));
 
         this.boundRotate = this.rotateScene.bind(this);
+        this.boundLeave = this.onMouseLeave.bind(this);
         // this.textContent = create('div', this.scrollContent, 'text-content');
         // this.textContent.innerHTML = this.formatText(this.element.text);
     }
@@ -61,9 +61,11 @@ export default class ModelText3D{
         if(q.matches){
             this.canvas.width = 2000;
             this.canvas.height = 2000;
+            this.inertiaMod = 20;
         }else{
             this.canvas.width = 2000;
             this.canvas.height = 1000;
+            this.inertiaMod = 10;
         }
         if(this.renderer!==undefined){
             this.camera.aspect = this.canvas.width / this.canvas.height;
@@ -76,14 +78,27 @@ export default class ModelText3D{
     }
     startRotating(e){
         console.log('start rotating');
+        if(this.inertia !== undefined) this.inertia.kill();
         this.deltaX = (e.type == 'touchstart') ? e.touches[0].clientX : e.clientX;
         this.sceneContent.addEventListener('mousemove', this.boundRotate);
         this.sceneContent.addEventListener('touchmove', this.boundRotate);
+        this.sceneContent.addEventListener('mouseleave', this.boundLeave);
+    }
+    onMouseLeave(){
+        // this.rotationSpeed = 0;
+        this.sceneContent.removeEventListener('mouseleave', this.boundLeave);
+        this.stopRotating();
     }
     stopRotating(){
-        console.log('stop rotating');
+        console.log('stop rotating', this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
+
+        this.sceneContent.removeEventListener('mouseleave', this.boundLeave);
         this.sceneContent.removeEventListener('mousemove', this.boundRotate);
         this.sceneContent.removeEventListener('touchmove', this.boundRotate);
+        this.inertiaSpeed = this.rotationSpeed * (this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
+        this.rotationSpeed = 0;
+        console.log(this.inertiaSpeed);
+        this.inertia = gsap.to(this.rotationObject.rotation, {duration:1, y:'+='+this.inertiaSpeed, ease:'out'});
     }
     rotateScene(e){
         const ex = (e.type == 'touchmove') ? e.touches[0].clientX : e.clientX;
@@ -91,6 +106,7 @@ export default class ModelText3D{
         const r = (ex - this.deltaX) / this.sceneContent.getBoundingClientRect().width;
         // console.log(r);
         this.deltaX = ex;
+        this.rotationSpeed = r;
         this.rotationObject.rotation.y += r;
     }
     moveCameraSideways(e){
@@ -101,7 +117,6 @@ export default class ModelText3D{
         this.camera.position.x = x;
         this.camera.lookAt(1, this.to.a, 0);
         // this.renderer.render(this.scene, this.camera);
-
     }
 
     setupTimeline(){
@@ -124,7 +139,7 @@ export default class ModelText3D{
                         this.camera.lookAt(1, this.to.a, 0);
                     }
                 });
-                this.timeline.to(this.to, {y:1.5, a:2.8, z:13, ease:'none'});
+                this.timeline.to(this.to, {y:1.5, a:2.8, z:13, ease:'none', immediateRender:true});
                 ScrollTrigger.refresh();
                 this.camera.position.y = this.to.y;
                 this.camera.position.z = this.to.z;
@@ -147,7 +162,7 @@ export default class ModelText3D{
                         this.camera.lookAt(1, this.to.a, 0);
                     }
                 });
-                this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
+                this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none', immediateRender:true});
                 // console.log(this.timeline.time());
                 ScrollTrigger.refresh();
                 this.camera.position.y = this.to.y;
