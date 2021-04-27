@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import {gsap} from 'gsap';
+import {ScrollTrigger} from 'gsap/ScrollTrigger';
 
 export default class ModelText3D{
     constructor(el, container){
@@ -14,6 +15,11 @@ export default class ModelText3D{
         this.build();
     }
     build(){
+        this.to = {
+            y:5,
+            a:1,
+            z:12
+        }
         this.wrapper = create('div', this.container, 'scroll-animation-container');
         this.wrapper.classList.add('model-text-3d');
         // this.fixedContent = create('div', this.wrapper, 'fixed-content');
@@ -34,11 +40,7 @@ export default class ModelText3D{
         }
         this.querySwitch(this.query);
         
-        this.to = {
-            y:5,
-            a:1,
-            z:12
-        }
+
         this.build3D();
         this.setupTimeline();
         
@@ -67,8 +69,10 @@ export default class ModelText3D{
             this.camera.aspect = this.canvas.width / this.canvas.height;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(this.canvas.width, this.canvas.height);
+            // console.log('switch render:');
+            // ScrollTrigger.refresh();
+            // this.renderer.render(this.scene, this.camera);
         }
-
     }
     startRotating(e){
         console.log('start rotating');
@@ -101,32 +105,56 @@ export default class ModelText3D{
     }
 
     setupTimeline(){
-        this.timeline = gsap.timeline({
-            paused:true,
-            scrollTrigger:{
-                scrub:true,
-                trigger:this.scrollContent,
-                onEnter:this.startAnimating.bind(this),
-                onLeave:this.stopAnimating.bind(this),
-                onEnterBack:this.startAnimating.bind(this),
-                onLeaveBack:this.stopAnimating.bind(this),
-                // pin:true,
-                // markers:true,
-                // start:'top top',
-                // end:'+=210%'
-            },
-            onUpdate:()=>{
-                // console.log('middle update', this.tl.time(), this.tl.progress());
-                // this.zoom.render(this.tl);
+        gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.matchMedia({
+            '(max-width: 767px)':()=>{
+                this.timeline = gsap.timeline({
+                    paused:true,
+                    scrollTrigger:{
+                        scrub:true,
+                        trigger:this.scrollContent,
+                        onEnter:this.startAnimating.bind(this),
+                        onLeave:this.stopAnimating.bind(this),
+                        onEnterBack:this.startAnimating.bind(this),
+                        onLeaveBack:this.stopAnimating.bind(this),
+                    },
+                    onUpdate:()=>{
+                        this.camera.position.y = this.to.y;
+                        this.camera.position.z = this.to.z;
+                        this.camera.lookAt(1, this.to.a, 0);
+                    }
+                });
+                this.timeline.to(this.to, {y:1.5, a:2.8, z:13, ease:'none'});
+                ScrollTrigger.refresh();
                 this.camera.position.y = this.to.y;
                 this.camera.position.z = this.to.z;
                 this.camera.lookAt(1, this.to.a, 0);
-                // this.renderer.render(this.scene, this.camera);
+            },
+            '(min-width: 768px)':()=>{
+                this.timeline = gsap.timeline({
+                    paused:true,
+                    scrollTrigger:{
+                        scrub:true,
+                        trigger:this.scrollContent,
+                        onEnter:this.startAnimating.bind(this),
+                        onLeave:this.stopAnimating.bind(this),
+                        onEnterBack:this.startAnimating.bind(this),
+                        onLeaveBack:this.stopAnimating.bind(this),
+                    },
+                    onUpdate:()=>{
+                        this.camera.position.y = this.to.y;
+                        this.camera.position.z = this.to.z;
+                        this.camera.lookAt(1, this.to.a, 0);
+                    }
+                });
+                this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
+                // console.log(this.timeline.time());
+                ScrollTrigger.refresh();
+                this.camera.position.y = this.to.y;
+                this.camera.position.z = this.to.z;
+                this.camera.lookAt(1, this.to.a, 0);
             }
-            
-
-        });
-        this.timeline.to(this.to, {y:1.5, a:2.5, z:13, ease:'none'});
+        })
     }
     startAnimating(){
         console.log('start animating');
@@ -205,6 +233,7 @@ export default class ModelText3D{
 
             localScene.add( gltf.scene );
             // gltf.scene.scale = 0.9;
+            // this.renderer.render(this.scene, this.camera);
 
         }, undefined, function ( error ) {
 
