@@ -1,7 +1,8 @@
 [zoom-entry-point]{
     .scroll-animation-container{
         &.model-text-3d{
-
+            -webkit-user-select: none;
+            user-select:none;
             .scroll-content{
                 position: relative;
                 .scene-content{
