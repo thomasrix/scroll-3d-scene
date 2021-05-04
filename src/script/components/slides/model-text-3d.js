@@ -4,6 +4,7 @@ import '../../../styles/model-text-3d.scss';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {gsap} from 'gsap';
+// import {Power2} from ''
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 
 export default class ModelText3D{
@@ -61,11 +62,11 @@ export default class ModelText3D{
         if(q.matches){
             this.canvas.width = 2000;
             this.canvas.height = 2000;
-            this.inertiaMod = 20;
+            this.inertiaMod = 10;
         }else{
             this.canvas.width = 2000;
             this.canvas.height = 1000;
-            this.inertiaMod = 10;
+            this.inertiaMod = 5;
         }
         if(this.renderer!==undefined){
             this.camera.aspect = this.canvas.width / this.canvas.height;
@@ -90,15 +91,15 @@ export default class ModelText3D{
         this.stopRotating();
     }
     stopRotating(){
-        console.log('stop rotating', this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
+        // console.log('stop rotating', this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
 
         this.sceneContent.removeEventListener('mouseleave', this.boundLeave);
         this.sceneContent.removeEventListener('mousemove', this.boundRotate);
         this.sceneContent.removeEventListener('touchmove', this.boundRotate);
-        this.inertiaSpeed = this.rotationSpeed * (this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
+        // this.inertiaDistance = this.rotationSpeed * (this.sceneContent.getBoundingClientRect().width/this.inertiaMod);
         this.rotationSpeed = 0;
-        console.log(this.inertiaSpeed);
-        this.inertia = gsap.to(this.rotationObject.rotation, {duration:1, y:'+='+this.inertiaSpeed, ease:'out'});
+        // console.log(this.inertiaSpeed);
+        // this.inertia = gsap.to(this.rotationObject.rotation, {duration:1, y:'+='+this.inertiaDistance, ease:'Power2.out'});
     }
     rotateScene(e){
         const ex = (e.type == 'touchmove') ? e.touches[0].clientX : e.clientX;

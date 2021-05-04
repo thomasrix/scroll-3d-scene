@@ -16,8 +16,8 @@ let config = {
         global:{
             TYPE:'Staging',
             DEBUGGING:true,
-            ASSETS_PATH:'https://www.dr.dk/tjenester/visuel/staging/blindness-scroll-animation/assets/',
-            EXTERNAL_ASSETS_PATH:'https://downol.dr.dk/download/nyheder/2020/blindhed-medicin/',
+            ASSETS_PATH:'https://www.dr.dk/tjenester/visuel/staging/scroll-3d-scene/assets/',
+            EXTERNAL_ASSETS_PATH:'https://downol.dr.dk/download/nyheder/2021/scroll-3d-scene/',
             DATA_ASSETS_PATH:'https://storage.googleapis.com/sheet-parser/',
             DATA_FILE:'test-20574499007967b5745c7aa3448fb595-3dscenetest-data.json',
         },
